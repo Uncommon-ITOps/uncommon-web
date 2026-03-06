@@ -10,16 +10,14 @@ export const metadata = {
   title: 'Uncommon — Coworking & Flexible Office Space in London',
 }
 
-export default async function RootLayout(props: { children: React.ReactNode }) {
+export default async function FrontendLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
-    <html lang="en">
-      <body>
-        <Nav />
-        <main className="main">{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <>
+      <Nav />
+      <main className="main">{children}</main>
+      <Footer />
+    </>
   )
 }
