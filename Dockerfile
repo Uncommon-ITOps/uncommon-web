@@ -27,6 +27,14 @@ COPY . .
 # Ensure public exists so runner COPY does not fail when project has no public/
 RUN mkdir -p /app/public
 
+# Build-time args for migrations (Railway injects env; pass as build args in Railway if needed)
+ARG DATABASE_URL
+ARG DATABASE_URI
+ARG PAYLOAD_SECRET
+ENV DATABASE_URL=${DATABASE_URL}
+ENV DATABASE_URI=${DATABASE_URI}
+ENV PAYLOAD_SECRET=${PAYLOAD_SECRET}
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
@@ -38,6 +46,9 @@ RUN \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi
+
+# Run Payload migrations (creates DB tables); needs DATABASE_URL/URI + PAYLOAD_SECRET as build args
+RUN npm run migrate:direct
 
 # Production image, copy all the files and run next
 FROM base AS runner
