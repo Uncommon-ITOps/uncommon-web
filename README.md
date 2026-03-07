@@ -73,7 +73,27 @@ Use `main` for production and `dev` for the development environment (see [HOSTIN
 | `npm run build` | Production build (no DB required) |
 | `npm run payload migrate` | Run DB migrations |
 | `npm run payload generate:types` | Regenerate Payload types |
+| `npm run seed` | Seed globals (Navigation, Homepage, Footer, SEO) so the site isn’t empty |
+| `npm run migrate:wp` | Migrate WP posts (from file or API) + seed globals |
+| `npm run verify:migration` | Check collection counts and globals after migration |
 
 ## Content migration from WordPress
 
-See [scripts/migrate-from-wp.ts](./scripts/migrate-from-wp.ts) for an example script. Export from the WordPress REST API, then run the script against dev first.
+Content stays empty until you either **seed globals** or **run the WP migration**.
+
+1. **Seed globals only** (no WordPress): fills Navigation, Homepage, Footer, and SEO defaults with placeholder content.
+   ```bash
+   npm run seed
+   ```
+
+2. **Migrate from WordPress** (posts → Journal, and seed globals):
+   - **Option A**: Export then run:
+     ```bash
+     curl "https://uncommon.co.uk/wp-json/wp/v2/posts?per_page=100" > scripts/wp-posts.json
+     npm run migrate:wp
+     ```
+   - **Option B**: Set `WP_API_URL=https://uncommon.co.uk` in `.env` and run `npm run migrate:wp`; the script will fetch posts from the WP REST API.
+
+3. **Verify**: `npm run verify:migration` prints collection counts and confirms globals load.
+
+See [scripts/migrate-from-wp.ts](./scripts/migrate-from-wp.ts) and [scripts/seed-globals.ts](./scripts/seed-globals.ts).
